@@ -234,6 +234,7 @@ h3 {
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
 }
 
 .avatar {
@@ -286,8 +287,7 @@ h3 {
   font-size: 12px;
 }
 
-.header-actions,
-.button-group {
+.header-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -330,6 +330,16 @@ h3 {
   color: var(--color-primary);
 }
 
+.button-danger {
+  background: var(--color-danger);
+  color: #ffffff;
+}
+
+.button-danger:hover {
+  opacity: 0.85;
+  color: #ffffff;
+}
+
 .button-small {
   min-height: 34px;
   padding: 7px 11px;
@@ -343,10 +353,6 @@ h3 {
 
 .stack-top-20 {
   margin-top: 20px;
-}
-
-.stack-top-30 {
-  margin-top: 30px;
 }
 
 .progress-summary {
@@ -373,10 +379,6 @@ h3 {
   border-radius: var(--radius-md);
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
-}
-
-.card-padding {
-  padding: 22px;
 }
 
 .card-header {
@@ -425,14 +427,6 @@ h3 {
   margin: 0;
   color: var(--color-muted);
   font-size: 12px;
-}
-
-.stat-detail.positive {
-  color: var(--color-success);
-}
-
-.stat-detail.attention {
-  color: var(--color-warning);
 }
 
 .table-wrapper {
@@ -507,9 +501,28 @@ h3 {
   color: var(--color-warning);
 }
 
-.status-danger {
-  background: var(--color-danger-soft);
-  color: var(--color-danger);
+.status-select {
+  display: inline-flex;
+  min-height: 25px;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.status-select.status-success {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.status-select.status-warning {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
 }
 
 .status-neutral {
@@ -627,6 +640,12 @@ h3 {
   font-size: 12px;
 }
 
+.form-error {
+  margin: 0 0 12px;
+  color: var(--color-danger);
+  font-size: 13px;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -656,12 +675,6 @@ h3 {
   font-size: 14px;
 }
 
-.empty-state {
-  padding: 42px 22px;
-  color: var(--color-muted);
-  text-align: center;
-}
-
 .filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -680,18 +693,6 @@ h3 {
   min-height: 38px;
 }
 
-.notice {
-  padding: 13px 15px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-}
-
-.notice-info {
-  border-color: var(--color-border);
-  background: var(--color-primary-soft);
-  color: var(--color-primary-dark);
-}
 
 .login-page {
   display: grid;
@@ -858,8 +859,7 @@ h3 {
   }
 
   .card-header,
-  .card-body,
-  .card-padding {
+  .card-body {
     padding-right: 18px;
     padding-left: 18px;
   }
@@ -915,15 +915,124 @@ h3 {
   }
 
   .header-actions,
-  .button-group,
   .form-actions {
     align-items: stretch;
     flex-direction: column;
   }
 
   .header-actions .button,
-  .button-group .button,
   .form-actions .button {
     width: 100%;
   }
+}
+
+/* ============================================================
+   DROPDOWN DO USUARIO
+   ============================================================ */
+
+.user-summary {
+  position: relative;
+  cursor: pointer;
+}
+
+.user-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 180px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+  padding: 6px 0;
+}
+
+.user-summary.is-open .user-dropdown {
+  display: block;
+}
+
+.user-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 14px;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.user-dropdown button:hover {
+  background: var(--color-primary-soft);
+}
+
+/* ============================================================
+   MODO ESCURO
+   ============================================================ */
+
+html.dark {
+  --color-surface: #1a1a1a;
+  --color-background: #0a0a0a;
+  --color-sidebar: #2a2a2a;
+  --color-text: #e0e0e0;
+  --color-muted: #999999;
+  --color-border: #333333;
+  --color-primary: #999999;
+  --color-primary-dark: #e0e0e0;
+  --color-primary-soft: #2a2a2a;
+  --color-accent: #999999;
+  --color-accent-soft: #2a2a2a;
+  --color-success: #999999;
+  --color-success-soft: #2a2a2a;
+  --color-warning: #999999;
+  --color-warning-soft: #2a2a2a;
+  --color-danger: #e0e0e0;
+  --color-danger-soft: #2a2a2a;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 28px rgba(0, 0, 0, 0.4);
+}
+
+html.dark body {
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.status-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 20;
+  min-width: 140px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.status-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.85rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.status-dropdown button:hover {
+  background: var(--color-muted);
+}
+
+.status-dropdown button.active {
+  font-weight: 600;
+  background: var(--color-muted);
+}
+
+.grid-3 + .card {
+  margin-top: 1.5rem;
 }
