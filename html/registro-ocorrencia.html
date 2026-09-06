@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrar ocorrência | CondoGestao</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script src="../js/script.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" data-sidebar id="main-navigation">
+        <a class="brand" href="index.html">
+          <span class="brand-mark" aria-hidden="true">C</span>
+          <span><span class="brand-name">CondoGestao</span><span class="brand-caption">Sistema de condomínios</span></span>
+        </a>
+        <p class="sidebar-section-label">Menu principal</p>
+        <nav class="main-nav" aria-label="Menu principal">
+          <a href="index.html">Dashboard</a>
+          <a href="moradores.html">Moradores</a>
+          <a href="unidades.html">Unidades</a>
+          <a href="ocorrencias.html" aria-current="page">Ocorrências</a>
+          <a href="reservas.html">Reservas</a>
+        </nav>
+        <div class="sidebar-footer">Dados demonstrativos da V1</div>
+      </aside>
+      <div class="overlay" data-overlay></div>
+      <main class="main-content">
+        <header class="topbar">
+          <button class="menu-toggle" type="button" data-menu-toggle aria-controls="main-navigation" aria-expanded="false" aria-label="Abrir menu">=</button>
+          <span class="topbar-context">Acompanhamento de chamados</span>
+          <div class="user-summary">
+            <span class="avatar" aria-hidden="true">AS</span>
+            <div><span class="user-name">Ana Souza</span><span class="user-role">Síndica</span></div>
+          </div>
+        </header>
+        <div class="page-container">
+          <header class="page-header">
+            <div>
+              <p class="breadcrumb">Início / Ocorrências / Novo registro</p>
+              <h1>Registrar ocorrência</h1>
+              <p>Informe a situação que precisa de acompanhamento pela administração.</p>
+            </div>
+          </header>
+          <section class="card">
+            <div class="card-header">
+              <div>
+                <h2>Dados da ocorrência</h2>
+                <p>Este registro é demonstrativo e não será armazenado em um servidor.</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <form action="ocorrencias.html" method="get" data-demo-form data-success-message="Ocorrência registrada com sucesso. Este é um registro demonstrativo.">
+                <div class="form-grid">
+                  <div class="form-field full-width">
+                    <label for="occurrence-title">Título</label>
+                    <input id="occurrence-title" name="titulo" type="text" maxlength="80" placeholder="Ex.: Lâmpada queimada na garagem" required />
+                  </div>
+                  <div class="form-field">
+                    <label for="occurrence-location">Local</label>
+                    <input id="occurrence-location" name="local" type="text" maxlength="60" placeholder="Ex.: Garagem B" required />
+                  </div>
+                  <div class="form-field">
+                    <label for="occurrence-category">Categoria</label>
+                    <select id="occurrence-category" name="categoria" required>
+                      <option value="">Selecione uma categoria</option>
+                      <option value="manutencao">Manutenção</option>
+                      <option value="seguranca">Segurança</option>
+                      <option value="barulho">Barulho</option>
+                      <option value="limpeza">Limpeza</option>
+                      <option value="outros">Outros</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label for="occurrence-date">Data da ocorrência</label>
+                    <input id="occurrence-date" name="data" type="date" required />
+                  </div>
+                  <div class="form-field">
+                    <label for="occurrence-priority">Prioridade</label>
+                    <select id="occurrence-priority" name="prioridade" required>
+                      <option value="">Selecione a prioridade</option>
+                      <option value="baixa">Baixa</option>
+                      <option value="media">Média</option>
+                      <option value="alta">Alta</option>
+                    </select>
+                  </div>
+                  <div class="form-field full-width">
+                    <label for="occurrence-description">Descrição</label>
+                    <textarea id="occurrence-description" name="descricao" maxlength="500" placeholder="Descreva o que aconteceu e inclua informações úteis para o atendimento." required></textarea>
+                    <p class="field-help">Informe somente dados necessários para o acompanhamento.</p>
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <a class="button button-secondary" href="ocorrencias.html">Cancelar</a>
+                  <button class="button button-primary" type="submit">Salvar ocorrência demonstrativa</button>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
