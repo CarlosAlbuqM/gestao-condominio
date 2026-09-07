@@ -160,7 +160,7 @@ O sistema utiliza dados demonstrativos armazenados em memória:
 
 ## Desenvolvedores
 
-- Vinicius - Desenvolvimento
+- Vinicius Metri e Carlos Albuquerque - Desenvolvimento
 
 ## Licença
 
