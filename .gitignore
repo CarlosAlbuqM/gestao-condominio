@@ -9,3 +9,8 @@ target/
 .project
 .vscode/
 spring-boot-thymeleaf-migration.skill.md
+
+# Codex / arquivos internos de desenvolvimento
+codex/
+tasks/
+AGENTS.md
