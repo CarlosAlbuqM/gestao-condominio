@@ -41,7 +41,7 @@ public class UnidadeController {
         model.addAttribute("unidadesOcupadas", ocupadas);
         model.addAttribute("unidadesDisponiveis", total - ocupadas);
 
-        List<Morador> moradoresAtivos = moradorService.listarAtivos(condominio);
+        List<Morador> moradoresAtivos = moradorService.listarTodos(condominio);
         Map<String, String> responsaveis = new HashMap<>();
         Map<String, Integer> qtdMoradores = new HashMap<>();
 

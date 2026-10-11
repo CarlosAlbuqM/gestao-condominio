@@ -1,28 +1,64 @@
 package condominio.model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "moradores")
 public class Morador {
-    private int id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "nome", nullable = false, length = 100)
     private String nome;
+
+    @Column(name = "email", length = 150)
     private String email;
+
+    @Column(name = "cpf", unique = true, length = 14)
     private String cpf;
+
+    @Column(name = "telefone", length = 20)
     private String telefone;
+
+    @Column(name = "tipo", length = 50)
     private String tipo;
+
+    @Column(name = "unidade", length = 20)
     private String unidade;
+
+    @Column(name = "bloco", length = 20)
     private String bloco;
+
+    @Column(name = "numero", length = 20)
     private String numero;
+
+    @Column(name = "situacao", length = 50)
     private String situacao;
+
+    @Column(name = "data_cadastro", length = 20)
     private String dataCadastro;
+
+    @Column(name = "vagas_garagem", length = 10)
     private String vagasGaragem;
+
+    @Column(name = "moradores_unidade")
     private int moradoresUnidade;
-    private String condominio;
+
+    @Column(name = "condominio_nome", length = 150)
+    private String condominioNome;
+
+    @ManyToOne
+    @JoinColumn(name = "condominio_id")
+    private Condominio condominio;
 
     public Morador() {
     }
 
-    public Morador(int id, String nome, String email, String cpf, String telefone, String tipo, 
-                   String unidade, String bloco, String numero, String situacao, String dataCadastro, 
-                   String vagasGaragem, int moradoresUnidade, String condominio) {
-        this.id = id;
+    public Morador(String nome, String email, String cpf, String telefone, String tipo,
+                   String unidade, String bloco, String numero, String situacao, String dataCadastro,
+                   String vagasGaragem, int moradoresUnidade, String condominioNome) {
         this.nome = nome;
         this.email = email;
         this.cpf = cpf;
@@ -35,14 +71,14 @@ public class Morador {
         this.dataCadastro = dataCadastro;
         this.vagasGaragem = vagasGaragem;
         this.moradoresUnidade = moradoresUnidade;
-        this.condominio = condominio;
+        this.condominioNome = condominioNome;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -142,11 +178,28 @@ public class Morador {
         this.moradoresUnidade = moradoresUnidade;
     }
 
+    public String getCondominioNome() {
+        return condominioNome;
+    }
+
+    public void setCondominioNome(String condominioNome) {
+        this.condominioNome = condominioNome;
+    }
+
+    // Compatibilidade com código legado
     public String getCondominio() {
-        return condominio;
+        return condominioNome;
     }
 
     public void setCondominio(String condominio) {
+        this.condominioNome = condominio;
+    }
+
+    public Condominio getCondominioEntity() {
+        return condominio;
+    }
+
+    public void setCondominioEntity(Condominio condominio) {
         this.condominio = condominio;
     }
 }

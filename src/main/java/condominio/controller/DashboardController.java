@@ -1,6 +1,8 @@
 package condominio.controller;
 
+import condominio.model.Condominio;
 import condominio.model.Usuario;
+import condominio.repository.CondominioRepository;
 import condominio.service.MoradorService;
 import condominio.service.UnidadeService;
 import condominio.service.OcorrenciaService;
@@ -28,6 +30,9 @@ public class DashboardController {
     @Autowired
     private ReservaService reservaService;
 
+    @Autowired
+    private CondominioRepository condominioRepository;
+
     @GetMapping("/")
     public String dashboard(Model model, HttpSession session, HttpServletResponse response) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
@@ -39,16 +44,26 @@ public class DashboardController {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
         
-        String condominio = usuario.getCondominio();
+        String condominioNome = usuario.getCondominio();
+
+        // Buscar dados do condomínio na tabela condominios
+        java.util.List<Condominio> condominios = condominioRepository.findByNome(condominioNome);
+        Condominio condominioEntity = condominios.isEmpty() ? null : condominios.get(0);
+        String blocosTexto = condominios.stream()
+                .map(Condominio::getCondominioBloco)
+                .filter(b -> b != null && !b.trim().isEmpty())
+                .collect(java.util.stream.Collectors.joining(", "));
         
         model.addAttribute("usuario", usuario);
-        model.addAttribute("moradoresAtivos", moradorService.contarAtivos(condominio));
-        model.addAttribute("unidadesOcupadas", moradorService.contarUnidadesOcupadas(condominio));
-        model.addAttribute("totalUnidades", unidadeService.listarTodas(condominio).size());
-        model.addAttribute("ocorrenciasAbertas", ocorrenciaService.contarAbertas(condominio));
-        model.addAttribute("reservasHoje", reservaService.contarHoje(condominio));
-        model.addAttribute("moradores", moradorService.listarAtivos(condominio));
-        model.addAttribute("reservas", reservaService.listarTodas(condominio));
+        model.addAttribute("condominioEntity", condominioEntity);
+        model.addAttribute("blocosTexto", blocosTexto.isEmpty() ? null : blocosTexto);
+        model.addAttribute("moradoresAtivos", moradorService.contarAtivos(condominioNome));
+        model.addAttribute("unidadesOcupadas", moradorService.contarUnidadesOcupadas(condominioNome));
+        model.addAttribute("totalUnidades", unidadeService.listarTodas(condominioNome).size());
+        model.addAttribute("ocorrenciasAbertas", ocorrenciaService.contarAbertas(condominioNome));
+        model.addAttribute("reservasHoje", reservaService.contarHoje(condominioNome));
+        model.addAttribute("moradores", moradorService.listarAtivos(condominioNome));
+        model.addAttribute("reservas", reservaService.listarTodas(condominioNome));
         return "dashboard";
     }
 }

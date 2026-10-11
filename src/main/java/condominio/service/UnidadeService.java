@@ -1,81 +1,77 @@
 package condominio.service;
 
+import condominio.model.Condominio;
 import condominio.model.Unidade;
+import condominio.repository.CondominioRepository;
+import condominio.repository.UnidadeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UnidadeService {
-    private List<Unidade> unidades;
 
-    public UnidadeService() {
-        unidades = new ArrayList<>(Arrays.asList(
-            // Residencial Jardim
-            new Unidade("A", "101", "Primeiro andar", "Ocupada", "01 vaga", "jardim"),
-            new Unidade("A", "102", "Primeiro andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("A", "201", "Segundo andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("A", "202", "Segundo andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("A", "301", "Terceiro andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("A", "302", "Terceiro andar", "Ocupada", "02 vagas", "jardim"),
-            new Unidade("A", "401", "Quarto andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("A", "402", "Quarto andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("B", "101", "Primeiro andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("B", "102", "Primeiro andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("B", "201", "Segundo andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("B", "202", "Segundo andar", "Ocupada", "01 vaga", "jardim"),
-            new Unidade("B", "301", "Terceiro andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("B", "302", "Terceiro andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("B", "401", "Quarto andar", "Disponivel", "01 vaga", "jardim"),
-            new Unidade("B", "402", "Quarto andar", "Disponivel", "01 vaga", "jardim"),
-            // Condominio Parque Verde
-            new Unidade("Torre 1", "101", "Primeiro andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 1", "102", "Primeiro andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 1", "201", "Segundo andar", "Ocupada", "01 vaga", "parque"),
-            new Unidade("Torre 1", "202", "Segundo andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 1", "301", "Terceiro andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 1", "302", "Terceiro andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 1", "401", "Quarto andar", "Ocupada", "02 vagas", "parque"),
-            new Unidade("Torre 1", "402", "Quarto andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 2", "101", "Primeiro andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 2", "102", "Primeiro andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 2", "201", "Segundo andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 2", "202", "Segundo andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 2", "301", "Terceiro andar", "Ocupada", "01 vaga", "parque"),
-            new Unidade("Torre 2", "302", "Terceiro andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 2", "401", "Quarto andar", "Disponivel", "01 vaga", "parque"),
-            new Unidade("Torre 2", "402", "Quarto andar", "Disponivel", "01 vaga", "parque")
-        ));
-    }
+    @Autowired
+    private UnidadeRepository unidadeRepository;
+
+    @Autowired
+    private CondominioRepository condominioRepository;
 
     public List<Unidade> listarTodas(String condominio) {
-        return unidades.stream()
-                .filter(u -> u.getCondominio().equals(condominio))
-                .collect(Collectors.toList());
+        return unidadeRepository.findByCondominioNome(condominio);
     }
 
     public long contarOcupadas(String condominio) {
-        return unidades.stream()
-                .filter(u -> "Ocupada".equals(u.getSituacao()) && u.getCondominio().equals(condominio))
+        return unidadeRepository.findByCondominioNome(condominio).stream()
+                .filter(u -> "Ocupada".equals(u.getSituacao()))
                 .count();
     }
 
     public List<String> listarBlocos(String condominio) {
-        if ("parque".equals(condominio)) {
-            return Arrays.asList("Torre 1", "Torre 2");
+        List<Condominio> condominios = condominioRepository.findByNome(condominio);
+        List<String> blocosColetados = new ArrayList<>();
+        for (Condominio c : condominios) {
+            if (c.getCondominioBloco() == null || c.getCondominioBloco().trim().isEmpty()) {
+                continue;
+            }
+            String bloco = c.getCondominioBloco().trim();
+            if (bloco.contains("/")) {
+                for (String p : bloco.split("/")) {
+                    String clean = p.trim();
+                    if (!clean.isEmpty() && !blocosColetados.contains(clean)) {
+                        blocosColetados.add(clean);
+                    }
+                }
+            } else if (bloco.toLowerCase().contains(" ou ")) {
+                String[] partes = bloco.split("(?i) ou ");
+                String primeira = partes[0].trim();
+                if (!blocosColetados.contains(primeira)) blocosColetados.add(primeira);
+                String segunda = partes[1].trim();
+                if (!segunda.contains(" ")) {
+                    String prefixo = primeira.replaceAll("\\d+$", "");
+                    String segCompleta = prefixo + segunda;
+                    if (!blocosColetados.contains(segCompleta)) blocosColetados.add(segCompleta);
+                } else if (!blocosColetados.contains(segunda)) {
+                    blocosColetados.add(segunda);
+                }
+            } else {
+                if (!blocosColetados.contains(bloco)) {
+                    blocosColetados.add(bloco);
+                }
+            }
         }
-        return Arrays.asList("A", "B");
+        return blocosColetados;
     }
 
     public void atualizarSituacao(String bloco, String numero, String condominio, String novaSituacao) {
-        for (Unidade u : unidades) {
-            if (u.getBloco().equals(bloco) && u.getNumero().equals(numero) && u.getCondominio().equals(condominio)) {
-                u.setSituacao(novaSituacao);
-                break;
-            }
-        }
+        unidadeRepository.findByCondominioNome(condominio).stream()
+                .filter(u -> u.getBloco().equals(bloco) && u.getNumero().equals(numero))
+                .findFirst()
+                .ifPresent(u -> {
+                    u.setSituacao(novaSituacao);
+                    unidadeRepository.save(u);
+                });
     }
 }

@@ -68,15 +68,15 @@ public class MoradorController {
             morador.setTipo("Proprietario");
         }
         java.time.LocalDate hoje = java.time.LocalDate.now();
-        String[] meses = {"janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"};
-        morador.setDataCadastro(hoje.getDayOfMonth() + " de " + meses[hoje.getMonthValue() - 1] + " de " + hoje.getYear());
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        morador.setDataCadastro(hoje.format(formatter));
         moradorService.salvar(morador);
         unidadeService.atualizarSituacao(morador.getBloco(), morador.getNumero(), condominio, "Ocupada");
         return "redirect:/moradores";
     }
 
     @GetMapping("/moradores/{id}")
-    public String detalhesMorador(@PathVariable int id, Model model, HttpSession session) {
+    public String detalhesMorador(@PathVariable Long id, Model model, HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
         String condominio = usuario.getCondominio();
@@ -90,7 +90,7 @@ public class MoradorController {
     }
 
     @GetMapping("/moradores/{id}/editar")
-    public String editarMorador(@PathVariable int id, Model model, HttpSession session) {
+    public String editarMorador(@PathVariable Long id, Model model, HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
         String condominio = usuario.getCondominio();
@@ -106,7 +106,7 @@ public class MoradorController {
     }
 
     @PostMapping("/moradores/{id}/editar")
-    public String atualizarMorador(@PathVariable int id, @ModelAttribute Morador dadosForm, HttpSession session) {
+    public String atualizarMorador(@PathVariable Long id, @ModelAttribute Morador dadosForm, HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
         String condominio = usuario.getCondominio();
@@ -140,7 +140,7 @@ public class MoradorController {
 
     @PostMapping("/moradores/{id}/situacao")
     @ResponseBody
-    public String toggleSituacao(@PathVariable int id, @RequestParam String situacao, HttpSession session) {
+    public String toggleSituacao(@PathVariable Long id, @RequestParam String situacao, HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "error";
         String condominio = usuario.getCondominio();
@@ -169,7 +169,7 @@ public class MoradorController {
     }
 
     @PostMapping("/moradores/{id}/excluir")
-    public String excluirMorador(@PathVariable int id, HttpSession session) {
+    public String excluirMorador(@PathVariable Long id, HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
         String condominio = usuario.getCondominio();

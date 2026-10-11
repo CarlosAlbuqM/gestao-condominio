@@ -1,0 +1,3 @@
+@echo off
+echo Iniciando CondoGestor - Sistema de Gestao de Condominio...
+mvn spring-boot:run

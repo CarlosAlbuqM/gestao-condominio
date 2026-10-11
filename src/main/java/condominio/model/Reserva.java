@@ -1,22 +1,48 @@
 package condominio.model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "reservas")
 public class Reserva {
-    private int id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "area", nullable = false, length = 100)
     private String area;
+
+    @Column(name = "area_info", length = 200)
     private String areaInfo;
+
+    @Column(name = "solicitante", nullable = false, length = 100)
     private String solicitante;
+
+    @Column(name = "data", length = 20)
     private String data;
+
+    @Column(name = "horario", length = 20)
     private String horario;
+
+    @Column(name = "finalidade", length = 200)
     private String finalidade;
+
+    @Column(name = "status", length = 50)
     private String status;
-    private String condominio;
+
+    @Column(name = "condominio_nome", length = 150)
+    private String condominioNome;
+
+    @ManyToOne
+    @JoinColumn(name = "condominio_id")
+    private Condominio condominio;
 
     public Reserva() {
     }
 
-    public Reserva(int id, String area, String areaInfo, String solicitante, String data, String horario, 
-                   String finalidade, String status, String condominio) {
-        this.id = id;
+    public Reserva(String area, String areaInfo, String solicitante, String data, String horario,
+                   String finalidade, String status, String condominioNome) {
         this.area = area;
         this.areaInfo = areaInfo;
         this.solicitante = solicitante;
@@ -24,14 +50,14 @@ public class Reserva {
         this.horario = horario;
         this.finalidade = finalidade;
         this.status = status;
-        this.condominio = condominio;
+        this.condominioNome = condominioNome;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -91,11 +117,28 @@ public class Reserva {
         this.status = status;
     }
 
+    public String getCondominioNome() {
+        return condominioNome;
+    }
+
+    public void setCondominioNome(String condominioNome) {
+        this.condominioNome = condominioNome;
+    }
+
+    // Compatibilidade com código legado
     public String getCondominio() {
-        return condominio;
+        return condominioNome;
     }
 
     public void setCondominio(String condominio) {
+        this.condominioNome = condominio;
+    }
+
+    public Condominio getCondominioEntity() {
+        return condominio;
+    }
+
+    public void setCondominioEntity(Condominio condominio) {
         this.condominio = condominio;
     }
 }

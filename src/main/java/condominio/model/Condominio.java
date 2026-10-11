@@ -1,28 +1,48 @@
 package condominio.model;
 
+import javax.persistence.*;
 import java.util.List;
 
+@Entity
+@Table(name = "condominios")
 public class Condominio {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "nome", nullable = false, length = 150)
     private String nome;
+
+    @OneToMany(mappedBy = "condominio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Morador> moradores;
+
+    @OneToMany(mappedBy = "condominio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Unidade> unidades;
-    private List<String> blocos;
+
+    @Column(name = "condominio_bloco", length = 50)
+    private String condominioBloco;
+
+    @OneToMany(mappedBy = "condominio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Ocorrencia> ocorrencias;
+
+    @OneToMany(mappedBy = "condominio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Reserva> reservas;
-    private List<String> atividadeRecente;
 
     public Condominio() {
     }
 
-    public Condominio(String nome, List<Morador> moradores, List<Unidade> unidades, List<String> blocos,
-                      List<Ocorrencia> ocorrencias, List<Reserva> reservas, List<String> atividadeRecente) {
+    public Condominio(String nome, String condominioBloco) {
         this.nome = nome;
-        this.moradores = moradores;
-        this.unidades = unidades;
-        this.blocos = blocos;
-        this.ocorrencias = ocorrencias;
-        this.reservas = reservas;
-        this.atividadeRecente = atividadeRecente;
+        this.condominioBloco = condominioBloco;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -49,14 +69,6 @@ public class Condominio {
         this.unidades = unidades;
     }
 
-    public List<String> getBlocos() {
-        return blocos;
-    }
-
-    public void setBlocos(List<String> blocos) {
-        this.blocos = blocos;
-    }
-
     public List<Ocorrencia> getOcorrencias() {
         return ocorrencias;
     }
@@ -73,11 +85,11 @@ public class Condominio {
         this.reservas = reservas;
     }
 
-    public List<String> getAtividadeRecente() {
-        return atividadeRecente;
+    public String getCondominioBloco() {
+        return condominioBloco;
     }
 
-    public void setAtividadeRecente(List<String> atividadeRecente) {
-        this.atividadeRecente = atividadeRecente;
+    public void setCondominioBloco(String condominioBloco) {
+        this.condominioBloco = condominioBloco;
     }
 }

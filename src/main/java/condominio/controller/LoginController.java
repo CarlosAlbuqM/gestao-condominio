@@ -1,6 +1,8 @@
 package condominio.controller;
 
 import condominio.model.Usuario;
+import condominio.service.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,16 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
-import java.util.Arrays;
-import java.util.List;
 
 @Controller
 public class LoginController {
 
-    private List<Usuario> usuarios = Arrays.asList(
-        new Usuario("sindico@condominio.com", "123456", "Vinicius", "jardim"),
-        new Usuario("admin@condominio.com", "admin", "Carlos Lima", "parque")
-    );
+    @Autowired
+    private UsuarioService usuarioService;
 
     @GetMapping("/login")
     public String login() {
@@ -30,14 +28,13 @@ public class LoginController {
                         Model model, 
                         HttpSession session) {
         
-        Usuario usuario = usuarios.stream()
-                .filter(u -> u.getEmail().equals(email) && u.getSenha().equals(password))
-                .findFirst()
-                .orElse(null);
-
-        if (usuario != null) {
-            session.setAttribute("usuarioLogado", usuario);
-            return "redirect:/";
+        if (usuarioService.autenticar(email, password)) {
+            // Como autenticou com sucesso, busca o usuário e salva na sessão
+            Usuario usuario = usuarioService.buscarPorEmail(email).orElse(null);
+            if (usuario != null) {
+                session.setAttribute("usuarioLogado", usuario);
+                return "redirect:/";
+            }
         }
 
         model.addAttribute("erro", "E-mail ou senha inválidos.");

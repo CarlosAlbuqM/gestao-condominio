@@ -1,9 +1,25 @@
 package condominio.model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "usuarios")
 public class Usuario {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "email", nullable = false, unique = true, length = 150)
     private String email;
+
+    @Column(name = "senha", nullable = false)
     private String senha;
+
+    @Column(name = "nome", nullable = false, length = 100)
     private String nome;
+
+    @Column(name = "condominio", length = 100)
     private String condominio;
 
     public Usuario() {
@@ -14,6 +30,14 @@ public class Usuario {
         this.senha = senha;
         this.nome = nome;
         this.condominio = condominio;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEmail() {

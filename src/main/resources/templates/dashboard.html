@@ -44,7 +44,7 @@
           </button>
           <span
             class="topbar-context"
-            th:text="'Visão geral - ' + (${usuario.condominio} == 'jardim' ? 'Residencial Jardim' : 'Condomínio Parque Verde')"
+            th:text="'Visão geral - ' + ${condominioEntity.nome} + (${blocosTexto != null} ? ' (Blocos: ' + ${blocosTexto} + ')' : '')"
             >Visão geral do condomínio</span
           >
           <div class="user-summary" data-user-menu>

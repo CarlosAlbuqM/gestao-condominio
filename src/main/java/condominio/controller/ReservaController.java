@@ -51,13 +51,21 @@ public class ReservaController {
         if (usuario == null) return "redirect:/login";
         reserva.setCondominio(usuario.getCondominio());
         reserva.setStatus("Aguardando");
+        if (reserva.getData() != null && !reserva.getData().isEmpty()) {
+            try {
+                java.time.LocalDate d = java.time.LocalDate.parse(reserva.getData());
+                reserva.setData(d.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            } catch (Exception e) {
+                // Mantem original
+            }
+        }
         reservaService.salvar(reserva);
         return "redirect:/reservas";
     }
 
     @PostMapping("/reservas/{id}/status")
     @ResponseBody
-    public String toggleStatus(@PathVariable int id, @RequestParam String status, HttpSession session) {
+    public String toggleStatus(@PathVariable Long id, @RequestParam String status, HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "error";
         String condominio = usuario.getCondominio();
