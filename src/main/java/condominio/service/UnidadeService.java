@@ -65,12 +65,47 @@ public class UnidadeService {
         return blocosColetados;
     }
 
+    private void associarCondominio(Unidade unidade) {
+        if (unidade != null && unidade.getCondominioEntity() == null && unidade.getCondominio() != null) {
+            String nomeCond = unidade.getCondominio();
+            String bloco = unidade.getBloco();
+            Condominio cond = null;
+            if (bloco != null && !bloco.trim().isEmpty()) {
+                cond = condominioRepository.findByNome(nomeCond).stream()
+                        .filter(c -> c.getCondominioBloco() != null && c.getCondominioBloco().equalsIgnoreCase(bloco.trim()))
+                        .findFirst()
+                        .orElse(null);
+            }
+            if (cond == null) {
+                cond = condominioRepository.findFirstByNome(nomeCond)
+                        .orElseGet(() -> condominioRepository.findAll().stream()
+                                .filter(c -> c.getNome() != null && c.getNome().equalsIgnoreCase(nomeCond.trim()))
+                                .findFirst()
+                                .orElse(null));
+            }
+            unidade.setCondominioEntity(cond);
+        }
+    }
+
+    public void salvar(Unidade unidade) {
+        associarCondominio(unidade);
+        unidadeRepository.save(unidade);
+    }
+
     public void atualizarSituacao(String bloco, String numero, String condominio, String novaSituacao) {
+        atualizarSituacaoEGaragem(bloco, numero, condominio, novaSituacao, null);
+    }
+
+    public void atualizarSituacaoEGaragem(String bloco, String numero, String condominio, String novaSituacao, String garagem) {
         unidadeRepository.findByCondominioNome(condominio).stream()
                 .filter(u -> u.getBloco().equals(bloco) && u.getNumero().equals(numero))
                 .findFirst()
                 .ifPresent(u -> {
                     u.setSituacao(novaSituacao);
+                    if (garagem != null && !garagem.trim().isEmpty()) {
+                        u.setGaragem(garagem);
+                    }
+                    associarCondominio(u);
                     unidadeRepository.save(u);
                 });
     }

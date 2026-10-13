@@ -1,6 +1,8 @@
 package condominio.service;
 
+import condominio.model.Condominio;
 import condominio.model.Ocorrencia;
+import condominio.repository.CondominioRepository;
 import condominio.repository.OcorrenciaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,21 @@ public class OcorrenciaService {
     @Autowired
     private OcorrenciaRepository ocorrenciaRepository;
 
+    @Autowired
+    private CondominioRepository condominioRepository;
+
+    private void associarCondominio(Ocorrencia ocorrencia) {
+        if (ocorrencia != null && ocorrencia.getCondominioEntity() == null && ocorrencia.getCondominio() != null) {
+            String nomeCond = ocorrencia.getCondominio();
+            Condominio cond = condominioRepository.findFirstByNome(nomeCond)
+                    .orElseGet(() -> condominioRepository.findAll().stream()
+                            .filter(c -> c.getNome() != null && c.getNome().equalsIgnoreCase(nomeCond.trim()))
+                            .findFirst()
+                            .orElse(null));
+            ocorrencia.setCondominioEntity(cond);
+        }
+    }
+
     public List<Ocorrencia> listarTodas(String condominio) {
         return ocorrenciaRepository.findByCondominioNome(condominio);
     }
@@ -24,6 +41,7 @@ public class OcorrenciaService {
     }
 
     public void salvar(Ocorrencia ocorrencia) {
+        associarCondominio(ocorrencia);
         ocorrenciaRepository.save(ocorrencia);
     }
 
@@ -40,6 +58,7 @@ public class OcorrenciaService {
     }
 
     public void atualizar(Ocorrencia ocorrenciaAtualizada) {
+        associarCondominio(ocorrenciaAtualizada);
         ocorrenciaRepository.save(ocorrenciaAtualizada);
     }
 }

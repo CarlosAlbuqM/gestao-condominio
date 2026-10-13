@@ -1,6 +1,8 @@
 package condominio.service;
 
+import condominio.model.Condominio;
 import condominio.model.Morador;
+import condominio.repository.CondominioRepository;
 import condominio.repository.MoradorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,27 @@ public class MoradorService {
     @Autowired
     private MoradorRepository moradorRepository;
 
+    @Autowired
+    private CondominioRepository condominioRepository;
+
+    private void associarCondominio(Morador morador) {
+        if (morador != null && morador.getCondominioEntity() == null && morador.getCondominio() != null) {
+            String nomeCond = morador.getCondominio();
+            String bloco = morador.getBloco();
+            Condominio cond = null;
+            if (bloco != null && !bloco.trim().isEmpty()) {
+                cond = condominioRepository.findByNome(nomeCond).stream()
+                        .filter(c -> c.getCondominioBloco() != null && c.getCondominioBloco().equalsIgnoreCase(bloco.trim()))
+                        .findFirst()
+                        .orElse(null);
+            }
+            if (cond == null) {
+                cond = condominioRepository.findFirstByNome(nomeCond).orElse(null);
+            }
+            morador.setCondominioEntity(cond);
+        }
+    }
+
     public List<Morador> listarTodos(String condominio) {
         return moradorRepository.findByCondominioNome(condominio);
     }
@@ -24,10 +47,12 @@ public class MoradorService {
     }
 
     public void salvar(Morador morador) {
+        associarCondominio(morador);
         moradorRepository.save(morador);
     }
 
     public void atualizar(Morador moradorAtualizado) {
+        associarCondominio(moradorAtualizado);
         moradorRepository.save(moradorAtualizado);
     }
 

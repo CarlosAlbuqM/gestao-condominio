@@ -62,7 +62,8 @@ public class MoradorController {
         morador.setCondominio(condominio);
         morador.setSituacao("Ativo");
         morador.setUnidade(morador.getBloco() + ", " + morador.getNumero());
-        morador.setVagasGaragem("01 vaga");
+        String codigoVaga = gerarCodigoVaga(morador.getBloco(), morador.getNumero());
+        morador.setVagasGaragem(codigoVaga);
         morador.setMoradoresUnidade(1);
         if (morador.getTipo() == null || morador.getTipo().isEmpty()) {
             morador.setTipo("Proprietario");
@@ -71,7 +72,7 @@ public class MoradorController {
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
         morador.setDataCadastro(hoje.format(formatter));
         moradorService.salvar(morador);
-        unidadeService.atualizarSituacao(morador.getBloco(), morador.getNumero(), condominio, "Ocupada");
+        unidadeService.atualizarSituacaoEGaragem(morador.getBloco(), morador.getNumero(), condominio, "Ocupada", codigoVaga);
         return "redirect:/moradores";
     }
 
@@ -123,6 +124,8 @@ public class MoradorController {
         existente.setBloco(dadosForm.getBloco());
         existente.setNumero(dadosForm.getNumero());
         existente.setUnidade(dadosForm.getBloco() + ", " + dadosForm.getNumero());
+        String codigoVaga = gerarCodigoVaga(dadosForm.getBloco(), dadosForm.getNumero());
+        existente.setVagasGaragem(codigoVaga);
         moradorService.atualizar(existente);
         
         if (!blocoAnterior.equals(dadosForm.getBloco()) || !numeroAnterior.equals(dadosForm.getNumero())) {
@@ -132,7 +135,9 @@ public class MoradorController {
             if (moradoresAtivosNaUnidadeAnterior == 0) {
                 unidadeService.atualizarSituacao(blocoAnterior, numeroAnterior, condominio, "Disponivel");
             }
-            unidadeService.atualizarSituacao(dadosForm.getBloco(), dadosForm.getNumero(), condominio, "Ocupada");
+            unidadeService.atualizarSituacaoEGaragem(dadosForm.getBloco(), dadosForm.getNumero(), condominio, "Ocupada", codigoVaga);
+        } else {
+            unidadeService.atualizarSituacaoEGaragem(dadosForm.getBloco(), dadosForm.getNumero(), condominio, "Ocupada", codigoVaga);
         }
         
         return "redirect:/moradores";
@@ -187,5 +192,42 @@ public class MoradorController {
             }
         }
         return "redirect:/moradores";
+    }
+
+    private String gerarCodigoVaga(String bloco, String numero) {
+        if (numero == null || numero.trim().isEmpty()) {
+            return "01 vaga";
+        }
+        String digitos = numero.replaceAll("\\D+", "");
+        if (digitos.isEmpty()) {
+            return "01 vaga";
+        }
+        char primeiroNumero = digitos.charAt(0);
+        char ultimoNumero = digitos.charAt(digitos.length() - 1);
+
+        String idBlocoTorre = "";
+        if (bloco != null && !bloco.trim().isEmpty()) {
+            String b = bloco.trim().toUpperCase();
+            if (b.contains("TORRE 1") || b.endsWith("1")) {
+                idBlocoTorre = "1";
+            } else if (b.contains("TORRE 2") || b.endsWith("2")) {
+                idBlocoTorre = "2";
+            } else if (b.contains("BLOCO A") || b.endsWith("A")) {
+                idBlocoTorre = "A";
+            } else if (b.contains("BLOCO B") || b.endsWith("B")) {
+                idBlocoTorre = "B";
+            } else if (b.contains("1")) {
+                idBlocoTorre = "1";
+            } else if (b.contains("2")) {
+                idBlocoTorre = "2";
+            } else if (b.contains("A")) {
+                idBlocoTorre = "A";
+            } else if (b.contains("B")) {
+                idBlocoTorre = "B";
+            } else {
+                idBlocoTorre = String.valueOf(b.charAt(b.length() - 1));
+            }
+        }
+        return "" + primeiroNumero + ultimoNumero + idBlocoTorre;
     }
 }
