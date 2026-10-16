@@ -150,13 +150,26 @@ public String salvarMorador(
     }
 
     @PostMapping("/moradores/{id}/editar")
-    public String atualizarMorador(@PathVariable Long id, @ModelAttribute Morador dadosForm, HttpSession session) {
+    public String atualizarMorador(@PathVariable Long id, @Valid @ModelAttribute Morador dadosForm,BindingResult result, Model model, HttpSession session) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
         String condominio = usuario.getCondominio();
         Morador existente = moradorService.buscarPorId(id, condominio);
         if (existente == null) return "redirect:/moradores";
         
+        if (result.hasErrors()) {
+    dadosForm.setId(id);
+
+    model.addAttribute("usuario", usuario);
+    model.addAttribute("blocos", unidadeService.listarBlocos(condominio));
+
+    model.addAttribute("numeros", Arrays.asList(
+            "101", "102", "201", "202",
+            "301", "302", "401", "402"
+    ));
+
+    return "editar-morador";
+}
         String blocoAnterior = existente.getBloco();
         String numeroAnterior = existente.getNumero();
         
