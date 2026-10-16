@@ -83,16 +83,22 @@
                 method="post"
               >
                 <div class="form-grid">
-                  <div class="form-field">
-                    <label for="nome">Nome completo</label>
-                    <input
-                      id="nome"
-                      th:field="*{nome}"
-                      type="text"
-                      placeholder="Ex.: Marina Costa"
-                      required
-                    />
-                  </div>
+                <div class="form-field">
+              <label for="nome">Nome completo</label>
+              <input
+                  id="nome"
+                  th:field="*{nome}"
+                  th:errorclass="campo-erro"
+                  type="text"
+                  placeholder="Ex.: Marina Costa"
+                  required
+              />
+              <p
+                  class="form-error"
+                  th:if="${#fields.hasErrors('nome')}"
+                  th:errors="*{nome}">
+              </p>
+          </div>
                   <div class="form-field">
                     <label for="cpf">CPF</label>
                     <input

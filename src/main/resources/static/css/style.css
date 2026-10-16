@@ -1038,3 +1038,12 @@ html.dark body {
 .grid-3 + .card {
   margin-top: 1.5rem;
 }
+
+
+/* ============================================================
+   Mensagem de erro
+   ============================================================ */
+
+.form-field input.campo-erro {
+    border-color: var(--color-danger);
+}

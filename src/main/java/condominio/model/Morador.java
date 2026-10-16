@@ -1,6 +1,8 @@
 package condominio.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "moradores")
@@ -10,6 +12,9 @@ public class Morador {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+        @NotBlank(message = "O nome do morador é obrigatório.")
+    @Size(min = 3, max = 100,
+        message = "O nome deve ter entre 3 e 100 caracteres.")
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 

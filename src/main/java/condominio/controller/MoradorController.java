@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.Arrays;
 
 @Controller
@@ -54,27 +56,68 @@ public class MoradorController {
         return "cadastro-morador";
     }
 
-    @PostMapping("/moradores")
-    public String salvarMorador(@ModelAttribute Morador morador, HttpSession session) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
-        if (usuario == null) return "redirect:/login";
-        String condominio = usuario.getCondominio();
-        morador.setCondominio(condominio);
-        morador.setSituacao("Ativo");
-        morador.setUnidade(morador.getBloco() + ", " + morador.getNumero());
-        String codigoVaga = gerarCodigoVaga(morador.getBloco(), morador.getNumero());
-        morador.setVagasGaragem(codigoVaga);
-        morador.setMoradoresUnidade(1);
-        if (morador.getTipo() == null || morador.getTipo().isEmpty()) {
-            morador.setTipo("Proprietario");
-        }
-        java.time.LocalDate hoje = java.time.LocalDate.now();
-        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        morador.setDataCadastro(hoje.format(formatter));
-        moradorService.salvar(morador);
-        unidadeService.atualizarSituacaoEGaragem(morador.getBloco(), morador.getNumero(), condominio, "Ocupada", codigoVaga);
-        return "redirect:/moradores";
+  @PostMapping("/moradores")
+public String salvarMorador(
+        @Valid @ModelAttribute("morador") Morador morador,
+        BindingResult result,
+        Model model,
+        HttpSession session) {
+
+    Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+
+    if (usuario == null) {
+        return "redirect:/login";
     }
+
+    String condominio = usuario.getCondominio();
+
+    // Verifica se o formulário possui erros de validação
+    if (result.hasErrors()) {
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("blocos", unidadeService.listarBlocos(condominio));
+        model.addAttribute("numeros", Arrays.asList(
+                "101", "102", "201", "202", "301", "302", "401", "402"
+        ));
+
+        return "cadastro-morador";
+    }
+
+    // Continua o cadastro somente com dados válidos
+    morador.setCondominio(condominio);
+    morador.setSituacao("Ativo");
+    morador.setUnidade(morador.getBloco() + ", " + morador.getNumero());
+
+    String codigoVaga = gerarCodigoVaga(
+            morador.getBloco(),
+            morador.getNumero()
+    );
+
+    morador.setVagasGaragem(codigoVaga);
+    morador.setMoradoresUnidade(1);
+
+    if (morador.getTipo() == null || morador.getTipo().isEmpty()) {
+        morador.setTipo("Proprietario");
+    }
+
+    java.time.LocalDate hoje = java.time.LocalDate.now();
+
+    java.time.format.DateTimeFormatter formatter =
+            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    morador.setDataCadastro(hoje.format(formatter));
+
+    moradorService.salvar(morador);
+
+    unidadeService.atualizarSituacaoEGaragem(
+            morador.getBloco(),
+            morador.getNumero(),
+            condominio,
+            "Ocupada",
+            codigoVaga
+    );
+
+    return "redirect:/moradores";
+}
 
     @GetMapping("/moradores/{id}")
     public String detalhesMorador(@PathVariable Long id, Model model, HttpSession session) {
