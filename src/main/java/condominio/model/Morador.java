@@ -1,8 +1,10 @@
 package condominio.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import org.hibernate.validator.constraints.br.CPF;
 
 @Entity
 @Table(name = "moradores")
@@ -12,15 +14,19 @@ public class Morador {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-        @NotBlank(message = "O nome do morador é obrigatório.")
+    @NotBlank(message = "O nome do morador é obrigatório.")
     @Size(min = 3, max = 100,
         message = "O nome deve ter entre 3 e 100 caracteres.")
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
+    @NotBlank(message = "O e-mail do morador é obrigatório.")
+    @Email(message = "Informe um e-mail válido.")
+    @Size(max = 150, message = "O e-mail deve ter no máximo 150 caracteres.")
     @Column(name = "email", length = 150)
     private String email;
 
+    @CPF(message = "Informe um CPF válido.")
     @Column(name = "cpf", unique = true, length = 14)
     private String cpf;
 
@@ -33,9 +39,11 @@ public class Morador {
     @Column(name = "unidade", length = 20)
     private String unidade;
 
+    @NotBlank(message = "Selecione o bloco.")
     @Column(name = "bloco", length = 20)
     private String bloco;
 
+    @NotBlank(message = "Selecione a unidade.")
     @Column(name = "numero", length = 20)
     private String numero;
 

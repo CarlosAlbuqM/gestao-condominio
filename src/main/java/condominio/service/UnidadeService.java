@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -63,6 +64,21 @@ public class UnidadeService {
             }
         }
         return blocosColetados;
+    }
+
+    public List<String> listarNumeros(String condominio) {
+        return unidadeRepository.findByCondominioNome(condominio).stream()
+                .map(Unidade::getNumero)
+                .filter(numero -> numero != null && !numero.trim().isEmpty())
+                .distinct()
+                .sorted(Comparator.naturalOrder())
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    public boolean existeUnidade(String bloco, String numero, String condominio) {
+        return unidadeRepository.findByCondominioNome(condominio).stream()
+                .anyMatch(unidade -> unidade.getBloco().equals(bloco)
+                        && unidade.getNumero().equals(numero));
     }
 
     private void associarCondominio(Unidade unidade) {

@@ -7,6 +7,7 @@ import condominio.repository.OcorrenciaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -35,8 +36,7 @@ public class OcorrenciaService {
     }
 
     public Ocorrencia buscarPorId(Long id, String condominio) {
-        return ocorrenciaRepository.findById(id)
-                .filter(o -> o.getCondominio().equals(condominio))
+        return ocorrenciaRepository.findByIdAndCondominioNome(id, condominio)
                 .orElse(null);
     }
 
@@ -60,5 +60,14 @@ public class OcorrenciaService {
     public void atualizar(Ocorrencia ocorrenciaAtualizada) {
         associarCondominio(ocorrenciaAtualizada);
         ocorrenciaRepository.save(ocorrenciaAtualizada);
+    }
+
+    public boolean atualizarStatus(Ocorrencia ocorrencia, String status) {
+        if (!Arrays.asList("Em analise", "Em andamento", "Concluido").contains(status)) {
+            return false;
+        }
+        ocorrencia.setStatus(status);
+        atualizar(ocorrencia);
+        return true;
     }
 }

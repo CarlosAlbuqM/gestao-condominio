@@ -1,6 +1,8 @@
 package condominio.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "reservas")
@@ -10,21 +12,30 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Selecione a área comum.")
+    @Size(max = 100, message = "A área deve ter no máximo 100 caracteres.")
     @Column(name = "area", nullable = false, length = 100)
     private String area;
 
     @Column(name = "area_info", length = 200)
     private String areaInfo;
 
+    @NotBlank(message = "O solicitante é obrigatório.")
+    @Size(max = 100, message = "O solicitante deve ter no máximo 100 caracteres.")
     @Column(name = "solicitante", nullable = false, length = 100)
     private String solicitante;
 
+    @NotBlank(message = "A data da reserva é obrigatória.")
     @Column(name = "data", length = 20)
     private String data;
 
+    @NotBlank(message = "O horário da reserva é obrigatório.")
+    @Size(max = 20, message = "O horário deve ter no máximo 20 caracteres.")
     @Column(name = "horario", length = 20)
     private String horario;
 
+    @NotBlank(message = "A finalidade da reserva é obrigatória.")
+    @Size(max = 200, message = "A finalidade deve ter no máximo 200 caracteres.")
     @Column(name = "finalidade", length = 200)
     private String finalidade;
 

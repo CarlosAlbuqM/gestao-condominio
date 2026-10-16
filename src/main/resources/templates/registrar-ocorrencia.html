@@ -116,91 +116,48 @@
             </div>
 
             <div class="card-body">
-              <form th:action="@{/ocorrencias}" method="post">
+              <form th:action="@{/ocorrencias}" th:object="${ocorrencia}" method="post">
                 <div class="form-grid">
                   <div class="form-field full-width">
-                    <label for="occurrence-title"> Título </label>
-
+                    <label for="titulo">Título</label>
                     <input
-                      id="occurrence-title"
-                      name="titulo"
+                      id="titulo"
+                      th:field="*{titulo}"
+                      th:errorclass="campo-erro"
                       type="text"
-                      maxlength="80"
+                      maxlength="200"
                       placeholder="Ex.: Lâmpada queimada na garagem"
                       required
                     />
+                    <p class="form-error" th:if="${#fields.hasErrors('titulo')}" th:errors="*{titulo}"></p>
                   </div>
-
                   <div class="form-field">
-                    <label for="occurrence-location"> Local </label>
-
+                    <label for="local">Local</label>
                     <input
-                      id="occurrence-location"
-                      name="local"
+                      id="local"
+                      th:field="*{local}"
+                      th:errorclass="campo-erro"
                       type="text"
-                      maxlength="60"
+                      maxlength="100"
                       placeholder="Ex.: Garagem B"
                       required
                     />
+                    <p class="form-error" th:if="${#fields.hasErrors('local')}" th:errors="*{local}"></p>
                   </div>
-
                   <div class="form-field">
-                    <label for="occurrence-category"> Categoria </label>
-
-                    <select id="occurrence-category" name="categoria" required>
-                      <option value="">Selecione uma categoria</option>
-
-                      <option value="manutencao">Manutenção</option>
-
-                      <option value="seguranca">Segurança</option>
-
-                      <option value="barulho">Barulho</option>
-
-                      <option value="limpeza">Limpeza</option>
-
-                      <option value="outros">Outros</option>
-                    </select>
+                    <label for="data">Data da ocorrência</label>
+                    <input id="data" th:field="*{data}" th:errorclass="campo-erro" type="date" required />
+                    <p class="form-error" th:if="${#fields.hasErrors('data')}" th:errors="*{data}"></p>
                   </div>
-
                   <div class="form-field">
-                    <label for="occurrence-date"> Data da ocorrência </label>
-
+                    <label for="responsavel">Responsável</label>
                     <input
-                      id="occurrence-date"
-                      name="data"
-                      type="date"
-                      required
+                      id="responsavel"
+                      th:field="*{responsavel}"
+                      type="text"
+                      maxlength="100"
+                      placeholder="Ex.: Administração"
                     />
-                  </div>
-
-                  <div class="form-field">
-                    <label for="occurrence-priority"> Prioridade </label>
-
-                    <select id="occurrence-priority" name="prioridade" required>
-                      <option value="">Selecione a prioridade</option>
-
-                      <option value="baixa">Baixa</option>
-
-                      <option value="media">Média</option>
-
-                      <option value="alta">Alta</option>
-                    </select>
-                  </div>
-
-                  <div class="form-field full-width">
-                    <label for="occurrence-description"> Descrição </label>
-
-                    <textarea
-                      id="occurrence-description"
-                      name="descricao"
-                      maxlength="500"
-                      placeholder="Descreva o que aconteceu."
-                      required
-                    ></textarea>
-
-                    <p class="field-help">
-                      Informe somente dados necessários para o acompanhamento.
-                    </p>
                   </div>
                 </div>
 

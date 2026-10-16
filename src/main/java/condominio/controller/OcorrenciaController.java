@@ -12,9 +12,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
 
 @Controller
@@ -49,22 +53,32 @@ public class OcorrenciaController {
     }
 
     @PostMapping("/ocorrencias")
-    public String salvarOcorrencia(@ModelAttribute Ocorrencia ocorrencia, HttpSession session) {
+    public String salvarOcorrencia(@Valid @ModelAttribute("ocorrencia") Ocorrencia ocorrencia,
+                                   BindingResult result,
+                                   HttpSession session,
+                                   Model model,
+                                   RedirectAttributes redirectAttributes) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
+
+        if (!result.hasFieldErrors("data")) {
+            try {
+                LocalDate.parse(ocorrencia.getData());
+            } catch (DateTimeParseException e) {
+                result.rejectValue("data", "data.invalida", "Informe uma data válida.");
+            }
+        }
+        if (result.hasErrors()) {
+            model.addAttribute("usuario", usuario);
+            return "registrar-ocorrencia";
+        }
+
         ocorrencia.setCondominio(usuario.getCondominio());
         ocorrencia.setStatus("Em analise");
-        if (ocorrencia.getData() != null && !ocorrencia.getData().isEmpty()) {
-            try {
-                java.time.LocalDate d = java.time.LocalDate.parse(ocorrencia.getData());
-                ocorrencia.setData(d.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            } catch (Exception e) {
-                // Mantem o valor original se não for parseavel
-            }
-        } else {
-            ocorrencia.setData(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        }
+        ocorrencia.setData(LocalDate.parse(ocorrencia.getData())
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         ocorrenciaService.salvar(ocorrencia);
+        redirectAttributes.addFlashAttribute("sucesso", "Ocorrência registrada com sucesso.");
         return "redirect:/ocorrencias";
     }
 
@@ -75,9 +89,7 @@ public class OcorrenciaController {
         if (usuario == null) return "error";
         String condominio = usuario.getCondominio();
         Ocorrencia ocorrencia = ocorrenciaService.buscarPorId(id, condominio);
-        if (ocorrencia != null) {
-            ocorrencia.setStatus(status);
-            ocorrenciaService.atualizar(ocorrencia);
+        if (ocorrencia != null && ocorrenciaService.atualizarStatus(ocorrencia, status)) {
             return "ok";
         }
         return "error";

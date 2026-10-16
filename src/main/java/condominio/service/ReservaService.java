@@ -7,6 +7,9 @@ import condominio.repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,8 +44,7 @@ public class ReservaService {
     }
 
     public Reserva buscarPorId(Long id, String condominio) {
-        return reservaRepository.findById(id)
-                .filter(r -> r.getCondominio().equals(condominio))
+        return reservaRepository.findByIdAndCondominioNome(id, condominio)
                 .orElse(null);
     }
 
@@ -54,6 +56,7 @@ public class ReservaService {
     public long contarHoje(String condominio) {
         return reservaRepository.findByCondominioNome(condominio).stream()
                 .filter(r -> "Confirmada".equals(r.getStatus()))
+                .filter(r -> dataEhHoje(r.getData()))
                 .count();
     }
 
@@ -62,5 +65,51 @@ public class ReservaService {
             return Arrays.asList("Piscina", "Academia", "Salao de festas");
         }
         return Arrays.asList("Salao de festas", "Churrasqueira", "Quadra");
+    }
+
+    public boolean areaPermitida(String condominio, String area) {
+        return area != null && listarAreasComuns(condominio).contains(area);
+    }
+
+    public boolean existeConflito(String condominio, String area, String data, String horario) {
+        return reservaRepository.findByCondominioNome(condominio).stream()
+                .anyMatch(reserva -> area.equals(reserva.getArea())
+                        && horario.equals(reserva.getHorario())
+                        && datasIguais(data, reserva.getData()));
+    }
+
+    public boolean atualizarStatus(Reserva reserva, String status) {
+        if (!Arrays.asList("Aguardando", "Confirmada").contains(status)) {
+            return false;
+        }
+        reserva.setStatus(status);
+        atualizar(reserva);
+        return true;
+    }
+
+    private boolean dataEhHoje(String data) {
+        return datasIguais(LocalDate.now().toString(), data);
+    }
+
+    private boolean datasIguais(String primeiraData, String segundaData) {
+        LocalDate primeira = converterData(primeiraData);
+        LocalDate segunda = converterData(segundaData);
+        return primeira != null && primeira.equals(segunda);
+    }
+
+    private LocalDate converterData(String data) {
+        if (data == null || data.trim().isEmpty()) {
+            return null;
+        }
+        for (DateTimeFormatter formato : Arrays.asList(
+                DateTimeFormatter.ISO_LOCAL_DATE,
+                DateTimeFormatter.ofPattern("dd/MM/yyyy"))) {
+            try {
+                return LocalDate.parse(data, formato);
+            } catch (DateTimeParseException ignored) {
+                // Tenta o próximo formato usado pela aplicação.
+            }
+        }
+        return null;
     }
 }

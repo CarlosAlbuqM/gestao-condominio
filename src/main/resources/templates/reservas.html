@@ -78,6 +78,8 @@
               >Nova reserva</a
             >
           </header>
+          <p class="feedback feedback-success" th:if="${sucesso}" th:text="${sucesso}" role="status"></p>
+          <p class="feedback feedback-error" th:if="${erro}" th:text="${erro}" role="alert"></p>
 
           <section class="grid grid-3" aria-label="Resumo das reservas">
             <article class="card stat-card">

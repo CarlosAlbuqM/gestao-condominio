@@ -104,9 +104,11 @@
                     <input
                       id="cpf"
                       th:field="*{cpf}"
+                      th:errorclass="campo-erro"
                       type="text"
                       placeholder="000.000.000-00"
                     />
+                    <p class="form-error" th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></p>
                   </div>
                   <div class="form-field">
                     <label for="email">E-mail</label>
@@ -117,6 +119,7 @@
                       placeholder="morador@email.com"
                       required
                     />
+                    <p class="form-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
                   </div>
                   <div class="form-field">
                     <label for="telefone">Telefone</label>
@@ -129,7 +132,7 @@
                   </div>
                   <div class="form-field">
                     <label for="bloco">Bloco</label>
-                    <select id="bloco" th:field="*{bloco}">
+                    <select id="bloco" th:field="*{bloco}" th:errorclass="campo-erro">
                       <option value="">Selecione</option>
                       <option
                         th:each="bloco : ${blocos}"
@@ -139,10 +142,11 @@
                         Bloco
                       </option>
                     </select>
+                    <p class="form-error" th:if="${#fields.hasErrors('bloco')}" th:errors="*{bloco}"></p>
                   </div>
                   <div class="form-field">
                     <label for="numero">Unidade</label>
-                    <select id="numero" th:field="*{numero}">
+                    <select id="numero" th:field="*{numero}" th:errorclass="campo-erro">
                       <option value="">Selecione</option>
                       <option
                         th:each="numero : ${numeros}"
@@ -152,6 +156,7 @@
                         Unidade
                       </option>
                     </select>
+                    <p class="form-error" th:if="${#fields.hasErrors('numero')}" th:errors="*{numero}"></p>
                   </div>
                 </div>
                 <div class="form-actions">

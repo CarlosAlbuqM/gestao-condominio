@@ -4,21 +4,25 @@ import condominio.model.Usuario;
 import condominio.model.Morador;
 import condominio.service.MoradorService;
 import condominio.service.UnidadeService;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.Arrays;
 
 @Controller
 public class MoradorController {
@@ -28,6 +32,11 @@ public class MoradorController {
 
     @Autowired
     private UnidadeService unidadeService;
+
+    @InitBinder("morador")
+    public void configurarBindingMorador(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, "cpf", new StringTrimmerEditor(true));
+    }
 
     @GetMapping("/moradores")
     public String listarMoradores(Model model, HttpSession session, HttpServletResponse response) {
@@ -47,80 +56,62 @@ public class MoradorController {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
         String condominio = usuario.getCondominio();
-        model.addAttribute("usuario", usuario);
-        model.addAttribute("blocos", unidadeService.listarBlocos(condominio));
-        model.addAttribute("numeros", Arrays.asList("101", "102", "201", "202", "301", "302", "401", "402"));
         Morador morador = new Morador();
         morador.setCondominio(condominio);
-        model.addAttribute("morador", morador);
+        prepararFormulario(model, usuario, morador);
         return "cadastro-morador";
     }
 
-  @PostMapping("/moradores")
-public String salvarMorador(
-        @Valid @ModelAttribute("morador") Morador morador,
-        BindingResult result,
-        Model model,
-        HttpSession session) {
+    @PostMapping("/moradores")
+    public String salvarMorador(@Valid @ModelAttribute("morador") Morador morador,
+                                BindingResult result,
+                                Model model,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
+        Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+        if (usuario == null) {
+            return "redirect:/login";
+        }
 
-    Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
+        String condominio = usuario.getCondominio();
+        validarUnidade(morador, result, condominio);
+        String cpfNormalizado = normalizarCpf(morador.getCpf());
+        validarCpfDuplicado(cpfNormalizado, null, result);
+        if (result.hasErrors()) {
+            prepararFormulario(model, usuario, morador);
+            return "cadastro-morador";
+        }
 
-    if (usuario == null) {
-        return "redirect:/login";
+        morador.setCpf(cpfNormalizado);
+        morador.setCondominio(condominio);
+        morador.setSituacao("Ativo");
+        morador.setUnidade(morador.getBloco() + ", " + morador.getNumero());
+        String codigoVaga = gerarCodigoVaga(morador.getBloco(), morador.getNumero());
+        morador.setVagasGaragem(codigoVaga);
+        morador.setMoradoresUnidade(1);
+        if (morador.getTipo() == null || morador.getTipo().trim().isEmpty()) {
+            morador.setTipo("Proprietario");
+        }
+        morador.setDataCadastro(java.time.LocalDate.now().format(
+                java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        try {
+            moradorService.salvar(morador);
+        } catch (DataIntegrityViolationException e) {
+            result.rejectValue("cpf", "cpf.duplicado", "Este CPF já está cadastrado.");
+            prepararFormulario(model, usuario, morador);
+            return "cadastro-morador";
+        }
+        unidadeService.atualizarSituacaoEGaragem(morador.getBloco(), morador.getNumero(),
+                condominio, "Ocupada", codigoVaga);
+        redirectAttributes.addFlashAttribute("sucesso", "Morador cadastrado com sucesso.");
+        return "redirect:/moradores";
     }
-
-    String condominio = usuario.getCondominio();
-
-    // Verifica se o formulário possui erros de validação
-    if (result.hasErrors()) {
-        model.addAttribute("usuario", usuario);
-        model.addAttribute("blocos", unidadeService.listarBlocos(condominio));
-        model.addAttribute("numeros", Arrays.asList(
-                "101", "102", "201", "202", "301", "302", "401", "402"
-        ));
-
-        return "cadastro-morador";
-    }
-
-    // Continua o cadastro somente com dados válidos
-    morador.setCondominio(condominio);
-    morador.setSituacao("Ativo");
-    morador.setUnidade(morador.getBloco() + ", " + morador.getNumero());
-
-    String codigoVaga = gerarCodigoVaga(
-            morador.getBloco(),
-            morador.getNumero()
-    );
-
-    morador.setVagasGaragem(codigoVaga);
-    morador.setMoradoresUnidade(1);
-
-    if (morador.getTipo() == null || morador.getTipo().isEmpty()) {
-        morador.setTipo("Proprietario");
-    }
-
-    java.time.LocalDate hoje = java.time.LocalDate.now();
-
-    java.time.format.DateTimeFormatter formatter =
-            java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-    morador.setDataCadastro(hoje.format(formatter));
-
-    moradorService.salvar(morador);
-
-    unidadeService.atualizarSituacaoEGaragem(
-            morador.getBloco(),
-            morador.getNumero(),
-            condominio,
-            "Ocupada",
-            codigoVaga
-    );
-
-    return "redirect:/moradores";
-}
 
     @GetMapping("/moradores/{id}")
-    public String detalhesMorador(@PathVariable Long id, Model model, HttpSession session) {
+    public String detalhesMorador(@PathVariable Long id,
+                                  Model model,
+                                  HttpSession session,
+                                  RedirectAttributes redirectAttributes) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
         String condominio = usuario.getCondominio();
@@ -130,49 +121,55 @@ public String salvarMorador(
             model.addAttribute("morador", morador);
             return "morador";
         }
+        redirectAttributes.addFlashAttribute("erro", "Morador não encontrado neste condomínio.");
         return "redirect:/moradores";
     }
 
     @GetMapping("/moradores/{id}/editar")
-    public String editarMorador(@PathVariable Long id, Model model, HttpSession session) {
+    public String editarMorador(@PathVariable Long id,
+                                Model model,
+                                HttpSession session,
+                                RedirectAttributes redirectAttributes) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
         String condominio = usuario.getCondominio();
         Morador morador = moradorService.buscarPorId(id, condominio);
         if (morador != null) {
-            model.addAttribute("usuario", usuario);
-            model.addAttribute("morador", morador);
-            model.addAttribute("blocos", unidadeService.listarBlocos(condominio));
-            model.addAttribute("numeros", Arrays.asList("101", "102", "201", "202", "301", "302", "401", "402"));
+            prepararFormulario(model, usuario, morador);
             return "editar-morador";
         }
+        redirectAttributes.addFlashAttribute("erro", "Morador não encontrado neste condomínio.");
         return "redirect:/moradores";
     }
 
     @PostMapping("/moradores/{id}/editar")
-    public String atualizarMorador(@PathVariable Long id, @Valid @ModelAttribute Morador dadosForm,BindingResult result, Model model, HttpSession session) {
+    public String atualizarMorador(@PathVariable Long id,
+                                   @Valid @ModelAttribute("morador") Morador dadosForm,
+                                   BindingResult result,
+                                   Model model,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
         String condominio = usuario.getCondominio();
         Morador existente = moradorService.buscarPorId(id, condominio);
-        if (existente == null) return "redirect:/moradores";
-        
+        if (existente == null) {
+            redirectAttributes.addFlashAttribute("erro", "Morador não encontrado neste condomínio.");
+            return "redirect:/moradores";
+        }
+
+        validarUnidade(dadosForm, result, condominio);
+        String cpfNormalizado = normalizarCpf(dadosForm.getCpf());
+        validarCpfDuplicado(cpfNormalizado, id, result);
         if (result.hasErrors()) {
-    dadosForm.setId(id);
-
-    model.addAttribute("usuario", usuario);
-    model.addAttribute("blocos", unidadeService.listarBlocos(condominio));
-
-    model.addAttribute("numeros", Arrays.asList(
-            "101", "102", "201", "202",
-            "301", "302", "401", "402"
-    ));
-
-    return "editar-morador";
-}
+            dadosForm.setId(id);
+            prepararFormulario(model, usuario, dadosForm);
+            return "editar-morador";
+        }
         String blocoAnterior = existente.getBloco();
         String numeroAnterior = existente.getNumero();
-        
+
+        dadosForm.setCpf(cpfNormalizado);
         existente.setNome(dadosForm.getNome());
         existente.setEmail(dadosForm.getEmail());
         existente.setCpf(dadosForm.getCpf());
@@ -182,7 +179,14 @@ public String salvarMorador(
         existente.setUnidade(dadosForm.getBloco() + ", " + dadosForm.getNumero());
         String codigoVaga = gerarCodigoVaga(dadosForm.getBloco(), dadosForm.getNumero());
         existente.setVagasGaragem(codigoVaga);
-        moradorService.atualizar(existente);
+        try {
+            moradorService.atualizar(existente);
+        } catch (DataIntegrityViolationException e) {
+            dadosForm.setId(id);
+            result.rejectValue("cpf", "cpf.duplicado", "Este CPF já está cadastrado.");
+            prepararFormulario(model, usuario, dadosForm);
+            return "editar-morador";
+        }
         
         if (!blocoAnterior.equals(dadosForm.getBloco()) || !numeroAnterior.equals(dadosForm.getNumero())) {
             long moradoresAtivosNaUnidadeAnterior = moradorService.listarAtivos(condominio).stream()
@@ -195,7 +199,8 @@ public String salvarMorador(
         } else {
             unidadeService.atualizarSituacaoEGaragem(dadosForm.getBloco(), dadosForm.getNumero(), condominio, "Ocupada", codigoVaga);
         }
-        
+
+        redirectAttributes.addFlashAttribute("sucesso", "Dados do morador atualizados com sucesso.");
         return "redirect:/moradores";
     }
 
@@ -208,8 +213,9 @@ public String salvarMorador(
         Morador morador = moradorService.buscarPorId(id, condominio);
         if (morador != null) {
             String situacaoAnterior = morador.getSituacao();
-            morador.setSituacao(situacao);
-            moradorService.atualizar(morador);
+            if (!moradorService.atualizarSituacao(morador, situacao)) {
+                return "error";
+            }
 
             if (!situacaoAnterior.equals(situacao)) {
                 String bloco = morador.getBloco();
@@ -230,7 +236,9 @@ public String salvarMorador(
     }
 
     @PostMapping("/moradores/{id}/excluir")
-    public String excluirMorador(@PathVariable Long id, HttpSession session) {
+    public String excluirMorador(@PathVariable Long id,
+                                 HttpSession session,
+                                 RedirectAttributes redirectAttributes) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
         String condominio = usuario.getCondominio();
@@ -246,8 +254,35 @@ public String salvarMorador(
             if (moradoresAtivosNaUnidade == 0) {
                 unidadeService.atualizarSituacao(bloco, numero, condominio, "Disponivel");
             }
+            redirectAttributes.addFlashAttribute("sucesso", "Morador excluído com sucesso.");
+        } else {
+            redirectAttributes.addFlashAttribute("erro", "Morador não encontrado neste condomínio.");
         }
         return "redirect:/moradores";
+    }
+
+    private void prepararFormulario(Model model, Usuario usuario, Morador morador) {
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("morador", morador);
+        model.addAttribute("blocos", unidadeService.listarBlocos(usuario.getCondominio()));
+        model.addAttribute("numeros", unidadeService.listarNumeros(usuario.getCondominio()));
+    }
+
+    private void validarUnidade(Morador morador, BindingResult result, String condominio) {
+        if (!result.hasFieldErrors("bloco") && !result.hasFieldErrors("numero")
+                && !unidadeService.existeUnidade(morador.getBloco(), morador.getNumero(), condominio)) {
+            result.rejectValue("numero", "unidade.invalida", "A unidade selecionada não pertence ao condomínio.");
+        }
+    }
+
+    private void validarCpfDuplicado(String cpf, Long idIgnorado, BindingResult result) {
+        if (!result.hasFieldErrors("cpf") && moradorService.cpfJaCadastrado(cpf, idIgnorado)) {
+            result.rejectValue("cpf", "cpf.duplicado", "Este CPF já está cadastrado.");
+        }
+    }
+
+    private String normalizarCpf(String cpf) {
+        return cpf == null ? null : cpf.replaceAll("\\D", "");
     }
 
     private String gerarCodigoVaga(String bloco, String numero) {

@@ -12,8 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @Controller
 public class ReservaController {
@@ -46,20 +52,42 @@ public class ReservaController {
     }
 
     @PostMapping("/reservas")
-    public String salvarReserva(@ModelAttribute Reserva reserva, HttpSession session) {
+    public String salvarReserva(@Valid @ModelAttribute("reserva") Reserva reserva,
+                                BindingResult result,
+                                HttpSession session,
+                                Model model,
+                                RedirectAttributes redirectAttributes) {
         Usuario usuario = (Usuario) session.getAttribute("usuarioLogado");
         if (usuario == null) return "redirect:/login";
-        reserva.setCondominio(usuario.getCondominio());
-        reserva.setStatus("Aguardando");
-        if (reserva.getData() != null && !reserva.getData().isEmpty()) {
+        String condominio = usuario.getCondominio();
+
+        if (!result.hasFieldErrors("area") && !reservaService.areaPermitida(condominio, reserva.getArea())) {
+            result.rejectValue("area", "area.invalida", "Selecione uma área comum disponível.");
+        }
+        if (!result.hasFieldErrors("data")) {
             try {
-                java.time.LocalDate d = java.time.LocalDate.parse(reserva.getData());
-                reserva.setData(d.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-            } catch (Exception e) {
-                // Mantem original
+                LocalDate.parse(reserva.getData());
+            } catch (DateTimeParseException e) {
+                result.rejectValue("data", "data.invalida", "Informe uma data válida.");
             }
         }
+        if (!result.hasFieldErrors("area") && !result.hasFieldErrors("data")
+                && !result.hasFieldErrors("horario")
+                && reservaService.existeConflito(condominio, reserva.getArea(), reserva.getData(), reserva.getHorario())) {
+            result.rejectValue("horario", "horario.indisponivel",
+                    "Já existe uma reserva para esta área, data e horário.");
+        }
+        if (result.hasErrors()) {
+            model.addAttribute("usuario", usuario);
+            model.addAttribute("areasComuns", reservaService.listarAreasComuns(condominio));
+            return "nova-reserva";
+        }
+
+        reserva.setCondominio(condominio);
+        reserva.setStatus("Aguardando");
+        reserva.setData(LocalDate.parse(reserva.getData()).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         reservaService.salvar(reserva);
+        redirectAttributes.addFlashAttribute("sucesso", "Reserva criada com sucesso.");
         return "redirect:/reservas";
     }
 
@@ -70,9 +98,7 @@ public class ReservaController {
         if (usuario == null) return "error";
         String condominio = usuario.getCondominio();
         Reserva reserva = reservaService.buscarPorId(id, condominio);
-        if (reserva != null) {
-            reserva.setStatus(status);
-            reservaService.atualizar(reserva);
+        if (reserva != null && reservaService.atualizarStatus(reserva, status)) {
             return "ok";
         }
         return "error";

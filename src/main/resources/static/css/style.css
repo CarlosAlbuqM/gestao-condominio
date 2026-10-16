@@ -649,6 +649,24 @@ h3 {
   font-size: 13px;
 }
 
+.feedback {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.feedback-success {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.feedback-error {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -1044,6 +1062,8 @@ html.dark body {
    Mensagem de erro
    ============================================================ */
 
-.form-field input.campo-erro {
+.form-field input.campo-erro,
+.form-field select.campo-erro,
+.form-field textarea.campo-erro {
     border-color: var(--color-danger);
 }

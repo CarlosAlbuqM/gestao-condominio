@@ -82,19 +82,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   /* ============================================================
-     LOGIN
-     ============================================================ */
-
-  var loginForm = document.querySelector(".login-form-content form");
-  if (loginForm) {
-    loginForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      // Login simulado - redireciona para o dashboard
-      window.location.href = "/";
-    });
-  }
-
-  /* ============================================================
      MASCARAS DE TELEFONE E CPF
      ============================================================ */
 

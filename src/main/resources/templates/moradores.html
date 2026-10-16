@@ -78,6 +78,8 @@
               >Novo morador</a
             >
           </header>
+          <p class="feedback feedback-success" th:if="${sucesso}" th:text="${sucesso}" role="status"></p>
+          <p class="feedback feedback-error" th:if="${erro}" th:text="${erro}" role="alert"></p>
           <section class="card">
             <div class="card-header">
               <div>

@@ -87,7 +87,7 @@
                 <div class="form-grid">
                   <div class="form-field">
                     <label for="area">Área comum</label>
-                    <select id="area" th:field="*{area}" required>
+                    <select id="area" th:field="*{area}" th:errorclass="campo-erro" required>
                       <option value="">Selecione</option>
                       <option
                         th:each="area : ${areasComuns}"
@@ -97,6 +97,7 @@
                         Área
                       </option>
                     </select>
+                    <p class="form-error" th:if="${#fields.hasErrors('area')}" th:errors="*{area}"></p>
                   </div>
                   <div class="form-field">
                     <label for="solicitante">Solicitante</label>
@@ -107,10 +108,12 @@
                       placeholder="Ex.: Marina Costa, 302"
                       required
                     />
+                    <p class="form-error" th:if="${#fields.hasErrors('solicitante')}" th:errors="*{solicitante}"></p>
                   </div>
                   <div class="form-field">
                     <label for="data">Data</label>
-                    <input id="data" th:field="*{data}" type="date" required />
+                    <input id="data" th:field="*{data}" th:errorclass="campo-erro" type="date" required />
+                    <p class="form-error" th:if="${#fields.hasErrors('data')}" th:errors="*{data}"></p>
                   </div>
                   <div class="form-field">
                     <label for="horario">Horário</label>
@@ -121,6 +124,7 @@
                       placeholder="Ex.: 18:00 - 23:00"
                       required
                     />
+                    <p class="form-error" th:if="${#fields.hasErrors('horario')}" th:errors="*{horario}"></p>
                   </div>
                   <div class="form-field">
                     <label for="finalidade">Finalidade</label>
@@ -131,6 +135,7 @@
                       placeholder="Ex.: Aniversário"
                       required
                     />
+                    <p class="form-error" th:if="${#fields.hasErrors('finalidade')}" th:errors="*{finalidade}"></p>
                   </div>
                 </div>
                 <div class="form-actions">
