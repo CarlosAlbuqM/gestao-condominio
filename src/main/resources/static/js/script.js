@@ -66,8 +66,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (action === "theme") {
           alternarTema();
-        } else if (action === "logout") {
-          window.location.href = "/login";
         }
 
         menu.classList.remove("is-open");

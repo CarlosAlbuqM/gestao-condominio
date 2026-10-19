@@ -358,12 +358,6 @@ h3 {
   margin-top: 20px;
 }
 
-.progress-summary {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 24px;
-}
 
 .grid-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -533,58 +527,6 @@ h3 {
   color: var(--color-muted);
 }
 
-.list {
-  display: grid;
-  gap: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.list-item {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 15px 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.list-item:first-child {
-  padding-top: 0;
-}
-
-.list-item:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
-}
-
-.list-item p {
-  margin: 2px 0 0;
-  color: var(--color-muted);
-  font-size: 12px;
-}
-
-.progress-track {
-  height: 8px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: var(--color-border);
-}
-
-.progress-value {
-  height: 100%;
-  border-radius: inherit;
-  background: var(--color-primary);
-}
-
-.progress-caption {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  color: var(--color-muted);
-  font-size: 12px;
-}
 
 .form-grid {
   display: grid;
@@ -637,11 +579,6 @@ h3 {
   box-shadow: 0 0 0 3px rgba(102, 102, 102, 0.18);
 }
 
-.field-help {
-  margin: 0;
-  color: var(--color-muted);
-  font-size: 12px;
-}
 
 .form-error {
   margin: 0 0 12px;
@@ -696,23 +633,6 @@ h3 {
   font-size: 14px;
 }
 
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 14px;
-  padding: 18px 22px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.filter-bar .form-field {
-  min-width: 180px;
-}
-
-.filter-bar .form-field input,
-.filter-bar .form-field select {
-  min-height: 38px;
-}
 
 .login-page {
   display: grid;
@@ -760,11 +680,6 @@ h3 {
   border: 0;
 }
 
-.login-note {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.58);
-  font-size: 12px;
-}
 
 .login-form-panel {
   display: flex;
@@ -869,8 +784,7 @@ h3 {
   .grid-3,
   .grid-4,
   .form-grid,
-  .info-grid,
-  .progress-summary {
+  .info-grid {
     grid-template-columns: 1fr;
   }
 
@@ -884,15 +798,6 @@ h3 {
     padding-left: 18px;
   }
 
-  .filter-bar {
-    display: grid;
-    padding-right: 18px;
-    padding-left: 18px;
-  }
-
-  .filter-bar .form-field {
-    min-width: 0;
-  }
 
   .overlay.is-visible {
     position: fixed;
@@ -918,10 +823,6 @@ h3 {
   .login-intro h1 {
     margin: 42px 0 14px;
     font-size: 28px;
-  }
-
-  .login-note {
-    margin-top: 24px;
   }
 
   .login-form-panel {
@@ -1018,39 +919,6 @@ html.dark {
 html.dark body {
   background: var(--color-background);
   color: var(--color-text);
-}
-
-.status-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 20;
-  min-width: 140px;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.status-dropdown button {
-  display: block;
-  width: 100%;
-  padding: 8px 12px;
-  border: none;
-  background: transparent;
-  color: var(--color-text);
-  font-size: 0.85rem;
-  text-align: left;
-  cursor: pointer;
-}
-
-.status-dropdown button:hover {
-  background: var(--color-muted);
-}
-
-.status-dropdown button.active {
-  font-weight: 600;
-  background: var(--color-muted);
 }
 
 .grid-3 + .card {

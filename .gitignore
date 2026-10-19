@@ -1,19 +1,24 @@
+# Java / Maven
 target/
 *.class
 *.jar
 *.war
+
+# IDEs
 .idea/
 *.iml
 .settings/
 .classpath
 .project
 .vscode/
-spring-boot-thymeleaf-migration.skill.md
 
-# Codex / arquivos internos de desenvolvimento
-codex/
-tasks/
-AGENTS.md
-
-# Arquivos do macOS
+# macOS
 .DS_Store
+._*
+__MACOSX/
+
+# Arquivos locais e logs
+.env
+.env.*
+!.env.example
+*.log

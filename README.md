@@ -1,167 +1,78 @@
-# CondoGestor - Sistema de Gestão de Condomínios
+# CondoGestor — Sistema de Gestão de Condomínios
 
-Sistema web para auxiliar síndicos ou administradores no gerenciamento de um condomínio.
+O **CondoGestor** é um sistema web desenvolvido para auxiliar síndicos e administradores no gerenciamento de condomínios, centralizando informações de moradores, unidades, ocorrências e reservas de áreas comuns.
 
-## Tecnologias Utilizadas
+O projeto foi desenvolvido na disciplina de **Laboratório de Programação**, do curso de Sistemas de Informação.
 
-- Java 8
-- Spring Boot 2.7.18
-- Spring Web
-- Thymeleaf
-- HTML5
-- CSS3
-- JavaScript
+## Tecnologias utilizadas
 
-## Pré-requisitos
-
-- Java JDK 8 ou superior
-- Apache Maven 3.6.0 ou superior
-
-### Instalação do Maven
-
-#### Windows
-1. Acesse https://maven.apache.org/download.cgi
-2. Baixe a versão mais recente (apache-maven-3.9.x-bin.zip)
-3. Extraia o arquivo em `C:\Program Files\Apache\maven`
-4. Adicione `C:\Program Files\Apache\maven\bin` ao PATH do sistema
-5. Reinicie o terminal
-
-#### Linux/macOS
-```bash
-# Ubuntu/Debian
-sudo apt-get install maven
-
-# macOS com Homebrew
-brew install maven
-```
-
-### Verificação da Instalação
-```bash
-mvn --version
-```
-
-## Estrutura do Projeto
-
-```
-gestao-condominio/
-├── pom.xml
-├── src/
-│   └── main/
-│       ├── java/
-│       │   └── condominio/
-│       │       ├── CondominioApplication.java
-│       │       ├── controller/
-│       │       │   ├── LoginController.java
-│       │       │   ├── DashboardController.java
-│       │       │   ├── MoradorController.java
-│       │       │   ├── UnidadeController.java
-│       │       │   ├── OcorrenciaController.java
-│       │       │   └── ReservaController.java
-│       │       ├── model/
-│       │       │   ├── Morador.java
-│       │       │   ├── Unidade.java
-│       │       │   ├── Ocorrencia.java
-│       │       │   ├── Reserva.java
-│       │       │   ├── Usuario.java
-│       │       │   └── Condominio.java
-│       │       └── service/
-│       │           ├── MoradorService.java
-│       │           ├── UnidadeService.java
-│       │           ├── OcorrenciaService.java
-│       │           └── ReservaService.java
-│       └── resources/
-│           ├── templates/
-│           │   ├── login.html
-│           │   ├── dashboard.html
-│           │   ├── moradores.html
-│           │   ├── cadastro-morador.html
-│           │   ├── editar-morador.html
-│           │   ├── morador.html
-│           │   ├── unidades.html
-│           │   ├── ocorrencias.html
-│           │   ├── registrar-ocorrencia.html
-│           │   ├── reservas.html
-│           │   └── nova-reserva.html
-│           ├── static/
-│           │   ├── css/
-│           │   │   └── style.css
-│           │   └── js/
-│           │       └── script.js
-│           └── application.properties
-├── AGENTS.md
-└── README.md
-```
-
-## Executando o Projeto
-
-### Opção 1: Usando Maven
-```bash
-# Navegue até a pasta do projeto
-cd gestao-condominio
-
-# Execute a aplicação
-mvn spring-boot:run
-```
-
-### Opção 2: Usando Maven Wrapper (se disponível)
-```bash
-# Windows
-./mvnw spring-boot:run
-
-# Linux/macOS
-./mvnw spring-boot:run
-```
-
-### Opção 3: Compilar e executar manualmente
-```bash
-# Compilar o projeto
-mvn clean package
-
-# Executar o JAR
-java -jar target/gestao-condominio-1.0.0.jar
-```
-
-A aplicação estará disponível em: **http://localhost:8080**
-
-## Rotas Disponíveis
-
-| Rota | Método | Descrição |
-|------|--------|-----------|
-| `/login` | GET | Página de login |
-| `/` | GET | Dashboard principal |
-| `/moradores` | GET | Listagem de moradores |
-| `/moradores/novo` | GET | Formulário de cadastro |
-| `/moradores/{id}` | GET | Detalhes do morador |
-| `/moradores/{id}/editar` | GET | Formulário de edição |
-| `/moradores/{id}/editar` | POST | Atualizar morador |
-| `/unidades` | GET | Listagem de unidades |
-| `/ocorrencias` | GET | Listagem de ocorrências |
-| `/ocorrencias/nova` | GET | Formulário de ocorrência |
-| `/reservas` | GET | Listagem de reservas |
-| `/reservas/nova` | GET | Formulário de reserva |
+- **Backend:** Java 8, Spring Boot 2.7.18 e Spring MVC
+- **Frontend:** HTML5, CSS3, JavaScript e Thymeleaf
+- **Persistência:** Spring Data JPA e Hibernate
+- **Banco de dados:** PostgreSQL hospedado no Neon
+- **Autenticação:** sessões HTTP e senhas protegidas com BCrypt
+- **Gerenciamento de dependências:** Maven
 
 ## Funcionalidades
 
-- **Login demonstrativo**: Simulação de autenticação
-- **Dashboard**: Visão geral com estatísticas
-- **Moradores**: CRUD completo (listar, cadastrar, editar, visualizar)
-- **Unidades**: Listagem e consulta de unidades
-- **Ocorrências**: Registro e acompanhamento de ocorrências
-- **Reservas**: Gestão de reservas de áreas comuns
+- **Autenticação:** login e logout de usuários, com acesso aos dados do condomínio associado.
+- **Dashboard:** visão geral com indicadores de moradores, unidades, ocorrências e reservas.
+- **Moradores:** cadastro, consulta, edição e exclusão, com validações de CPF, e-mail e campos obrigatórios.
+- **Unidades:** listagem e acompanhamento das unidades do condomínio.
+- **Ocorrências:** registro, consulta e atualização de status.
+- **Reservas:** agendamento de áreas comuns, alteração de status e verificação de conflitos.
 
-## Dados Simulados
+## Estrutura do projeto
 
-O sistema utiliza dados demonstrativos armazenados em memória:
-- 4 moradores por condomínio
-- 16 unidades (blocos A e B)
-- 3 ocorrências
-- 3 reservas
-- 3 áreas comuns
+O código Java está organizado em camadas:
+
+- `controller/` — Recebimento de requisições e gerenciamento das rotas.
+- `service/` — Regras de negócio e operações da aplicação.
+- `repository/` — Acesso ao banco de dados por meio do Spring Data JPA.
+- `model/` — Entidades e mapeamentos JPA.
+- `config/` — Configurações da aplicação e de segurança.
+
+Os arquivos HTML estão em `src/main/resources/templates/`, enquanto CSS e JavaScript ficam em `src/main/resources/static/`.
+
+## Como executar
+
+### Pré-requisitos
+
+- Java JDK 8 ou superior
+- Apache Maven 3.6 ou superior, para execução pelo terminal
+- Acesso ao banco PostgreSQL utilizado pelo projeto
+
+### Configuração do banco de dados
+
+A conexão com o PostgreSQL é definida em `src/main/resources/application.properties`.
+
+A aplicação oferece suporte às seguintes variáveis de ambiente para configurar a conexão:
+
+- `DB_URL` — URL JDBC do PostgreSQL
+- `DB_USER` — Usuário do banco
+- `DB_PASSWORD` — Senha do banco
+
+Não inclua credenciais pessoais em commits ou documentação.
+
+### Execução
+
+Com o Maven disponível, acesse a pasta do projeto e execute:
+
+`mvn spring-boot:run`
+
+Alternativamente, abra o projeto no VS Code com as extensões Java e Spring Boot e execute a classe `CondominioApplication.java`.
+
+Após a inicialização, acesse:
+
+**http://localhost:8080/login**
+
+Para entrar no sistema, utilize uma conta previamente cadastrada no banco de dados.
 
 ## Desenvolvedores
 
-- Vinicius Metri e Carlos Albuquerque - Desenvolvimento
+- Carlos Albuquerque
+- Vinicius Metri
 
-## Licença
+## Finalidade
 
-Este projeto é para fins educacionais.
+Projeto acadêmico desenvolvido para fins educacionais, com foco na aplicação prática de Java, Spring Boot, desenvolvimento web e persistência de dados.
