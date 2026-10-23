@@ -70,7 +70,7 @@ Para entrar no sistema, utilize uma conta previamente cadastrada no banco de dad
 
 ## Desenvolvedores
 
-- Carlos Albuquerque
+- Carlos Phelipe M. de Albuquerque
 - Vinicius Metri
 
 ## Finalidade
