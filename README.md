@@ -6,7 +6,7 @@ O projeto foi desenvolvido na disciplina de **Laboratório de Programação**, d
 
 ## Tecnologias utilizadas
 
-- **Backend:** Java 8, Spring Boot 2.7.18 e Spring MVC
+- **Backend:** Java 21, Spring Boot 4.1.2 e Spring MVC
 - **Frontend:** HTML5, CSS3, JavaScript e Thymeleaf
 - **Persistência:** Spring Data JPA e Hibernate
 - **Banco de dados:** PostgreSQL hospedado no Neon
@@ -38,13 +38,14 @@ Os arquivos HTML estão em `src/main/resources/templates/`, enquanto CSS e JavaS
 
 ### Pré-requisitos
 
-- Java JDK 8 ou superior
+- Java JDK 21 ou superior
 - Apache Maven 3.6 ou superior, para execução pelo terminal
 - Acesso ao banco PostgreSQL utilizado pelo projeto
 
 ### Configuração do banco de dados
 
-A conexão com o PostgreSQL é definida em `src/main/resources/application.properties`.
+A conexão com o PostgreSQL é definida em `src/main/resources/application.properties`. 
+As variáveis ficam no arquivo .env.example
 
 A aplicação oferece suporte às seguintes variáveis de ambiente para configurar a conexão:
 
