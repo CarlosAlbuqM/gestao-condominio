@@ -3,32 +3,32 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.18</version>
+        <version>4.1.2</version>
         <relativePath/>
     </parent>
-    
+
     <groupId>condominio</groupId>
     <artifactId>gestao-condominio</artifactId>
     <version>1.0.0</version>
     <name>gestao-condominio</name>
     <description>Sistema de Gestão de Condomínios</description>
-    
+
     <properties>
         <java.version>21</java.version>
     </properties>
-    
+
     <dependencies>
-        <!-- Spring Web -->
+        <!-- Spring MVC: controllers, rotas, servidor Tomcat embutido -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
-        <!-- Thymeleaf -->
+        <!-- Thymeleaf: templates HTML -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -40,27 +40,26 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- PostgreSQL Driver (Neon) -->
+        <!-- Driver do PostgreSQL (Neon) -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Spring Security (BCrypt para hash de senha) -->
+        <!-- Spring Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-
-        <!-- Validação de dados -->
+        <!-- Bean Validation (@NotBlank, @Email, @CPF...) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
     </dependencies>
-    
+
     <build>
         <plugins>
             <plugin>
