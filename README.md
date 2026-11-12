@@ -53,21 +53,23 @@ A aplicação oferece suporte às seguintes variáveis de ambiente para configur
 - `DB_USER` — Usuário do banco
 - `DB_PASSWORD` — Senha do banco
 
-Não inclua credenciais pessoais em commits ou documentação.
+## 🌐 Acesse online
 
-### Execução
+**https://condogestor-7xjq.onrender.com**
 
-Com o Maven disponível, acesse a pasta do projeto e execute:
+> Hospedado no plano gratuito do Render: depois de 15 minutos sem acesso,
+> o primeiro carregamento pode levar cerca de 1 minuto.
 
-`mvn spring-boot:run`
+## 🐳 Executando com Docker
 
-Alternativamente, abra o projeto no VS Code com as extensões Java e Spring Boot e execute a classe `CondominioApplication.java`.
+Pré-requisitos: Docker instalado e um arquivo `.env` (use o `.env.example` como modelo).
 
-Após a inicialização, acesse:
+​```bash
+docker build -t condogestor .
+docker run --rm -p 8080:8080 --env-file .env condogestor
+​```
 
-**http://localhost:8080/login**
-
-Para entrar no sistema, utilize uma conta previamente cadastrada no banco de dados.
+Acesse http://localhost:8080
 
 ## Desenvolvedores
 
