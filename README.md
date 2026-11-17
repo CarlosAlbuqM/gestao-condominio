@@ -69,6 +69,13 @@ docker build -t condogestor .
 docker run --rm -p 8080:8080 --env-file .env condogestor
 ​```
 
+### Com Docker Compose
+
+```bash
+cp .env.example .env.dev 
+docker compose --env-file .env.dev up --build
+```
+
 Acesse http://localhost:8080
 
 ## Desenvolvedores
